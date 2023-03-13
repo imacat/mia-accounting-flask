@@ -770,6 +770,12 @@ class JournalEntryEditor {
     #modal;
 
     /**
+     * The entry type, either "debit" or "credit"
+     * @type {string}
+     */
+    entryType;
+
+    /**
      * The control of the account
      * @type {HTMLDivElement}
      */
@@ -844,6 +850,9 @@ class JournalEntryEditor {
         this.#summaryError = document.getElementById("accounting-entry-editor-summary-error");
         this.#amount = document.getElementById("accounting-entry-editor-amount");
         this.#amountError = document.getElementById("accounting-entry-editor-amount-error");
+        this.#summaryControl.onclick = () => {
+            SummaryEditor.start(this, this.#summary.dataset.value);
+        };
         this.#element.onsubmit = () => {
             if (this.#validate()) {
                 if (this.#entry === null) {
@@ -856,6 +865,38 @@ class JournalEntryEditor {
             }
             return false;
         };
+    }
+
+    /**
+     * Saves the summary from the summary editor.
+     *
+     * @param summary {string} the summary
+     */
+    saveSummary(summary) {
+        if (summary === "") {
+            this.#summaryControl.classList.remove("accounting-not-empty");
+        } else {
+            this.#summaryControl.classList.add("accounting-not-empty");
+        }
+        this.#summary.dataset.value = summary;
+        this.#summary.innerText = summary;
+        bootstrap.Modal.getOrCreateInstance(this.#modal).show();
+    }
+
+    /**
+     * Saves the summary with the suggested account from the summary editor.
+     *
+     * @param summary {string} the summary
+     * @param accountCode {string} the account code
+     * @param accountText {string} the account text
+     */
+    saveSummaryWithAccount(summary, accountCode, accountText) {
+        this.#accountControl.classList.add("accounting-not-empty");
+        this.#account.dataset.code = accountCode;
+        this.#account.dataset.text = accountText;
+        this.#account.innerText = accountText;
+        this.#validateAccount();
+        this.saveSummary(summary)
     }
 
     /**
@@ -926,6 +967,7 @@ class JournalEntryEditor {
     #onAddNew(side) {
         this.#entry = null;
         this.#side = side;
+        this.entryType = this.#side.entryType;
         this.#element.dataset.entryType = side.entryType;
         this.#accountControl.classList.remove("accounting-not-empty");
         this.#accountControl.classList.remove("is-invalid");
@@ -956,6 +998,7 @@ class JournalEntryEditor {
     #onEdit(entry, accountCode, accountText, summary, amount) {
         this.#entry = entry;
         this.#side = entry.side;
+        this.entryType = this.#side.entryType;
         this.#element.dataset.entryType = entry.entryType;
         if (accountCode === "") {
             this.#accountControl.classList.remove("accounting-not-empty");
