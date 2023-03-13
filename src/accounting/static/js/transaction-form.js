@@ -690,7 +690,7 @@ class JournalEntrySubForm {
         this.#element = element;
         this.entryType = element.dataset.entryType;
         this.entryIndex = parseInt(element.dataset.entryIndex);
-        this.#prefix = element.dataset.prefix;
+        this.#prefix = "accounting-currency-" + element.dataset.currencyIndex + "-" + this.entryType + "-" + this.entryIndex;
         this.#control = document.getElementById(this.#prefix + "-control");
         this.#error = document.getElementById(this.#prefix + "-error");
         this.#accountCode = document.getElementById(this.#prefix + "-account-code");
