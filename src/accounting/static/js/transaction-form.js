@@ -480,7 +480,6 @@ class DebitCreditSideSubForm {
         this.#addEntryButton = document.getElementById(this.#prefix + "-add-entry");
         this.#addEntryButton.onclick = () => {
             JournalEntryEditor.addNew(this);
-            AccountSelector.initializeJournalEntryForm();
         };
         this.#resetDeleteJournalEntryButtons();
     }
@@ -703,7 +702,6 @@ class JournalEntrySubForm {
         this.deleteButton = document.getElementById(this.#prefix + "-delete");
         this.#control.onclick = () => {
             JournalEntryEditor.edit(this, this.#accountCode.value, this.#accountCode.dataset.text, this.#summary.value, this.amount.value);
-            AccountSelector.initializeJournalEntryForm();
         };
         this.deleteButton.onclick = () => {
             this.#element.parentElement.removeChild(this.#element);
@@ -856,7 +854,10 @@ class JournalEntryEditor {
         this.#summary = document.getElementById(this.#prefix + "-summary");
         this.#summaryError = document.getElementById(this.#prefix + "-summary-error");
         this.#amount = document.getElementById(this.#prefix + "-amount");
-        this.#amountError = document.getElementById(this.#prefix + "-amount-error");
+        this.#amountError = document.getElementById(this.#prefix + "-amount-error")
+        this.#accountControl.onclick = () => {
+            AccountSelector.start(this, this.entryType);
+        }
         this.#summaryControl.onclick = () => {
             SummaryEditor.start(this, this.#summary.dataset.value);
         };
@@ -872,6 +873,41 @@ class JournalEntryEditor {
             }
             return false;
         };
+    }
+
+    /**
+     * Returns the account code.
+     *
+     * @return {string|null} the account code
+     */
+    getAccountCode() {
+        return this.#account.dataset.code === ""? null: this.#account.dataset.code;
+    }
+
+    /**
+     * Clears the account.
+     *
+     */
+    clearAccount() {
+        this.#accountControl.classList.remove("accounting-not-empty");
+        this.#account.dataset.code = "";
+        this.#account.dataset.text = "";
+        this.#account.innerText = "";
+        this.#validateAccount();
+    }
+
+    /**
+     * Sets the account.
+     *
+     * @param code {string} the account code
+     * @param text {string} the account text
+     */
+    saveAccount(code, text) {
+        this.#accountControl.classList.add("accounting-not-empty");
+        this.#account.dataset.code = code;
+        this.#account.dataset.text = text;
+        this.#account.innerText = text;
+        this.#validateAccount();
     }
 
     /**
@@ -976,6 +1012,7 @@ class JournalEntryEditor {
         this.#side = side;
         this.entryType = this.#side.entryType;
         this.#element.dataset.entryType = side.entryType;
+        this.#accountControl.dataset.bsTarget = "#accounting-account-selector-" + side.entryType + "-modal";
         this.#accountControl.classList.remove("accounting-not-empty");
         this.#accountControl.classList.remove("is-invalid");
         this.#account.innerText = "";
@@ -1007,6 +1044,7 @@ class JournalEntryEditor {
         this.#side = entry.side;
         this.entryType = this.#side.entryType;
         this.#element.dataset.entryType = entry.entryType;
+        this.#accountControl.dataset.bsTarget = "#accounting-account-selector-" + entry.entryType + "-modal";
         if (accountCode === "") {
             this.#accountControl.classList.remove("accounting-not-empty");
         } else {
