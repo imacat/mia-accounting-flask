@@ -500,6 +500,7 @@ class DebitCreditSideSubForm {
         const entry = new JournalEntrySubForm(this, document.getElementById(this.#prefix + "-" + String(newIndex)));
         this.#entries.push(entry);
         this.#resetDeleteJournalEntryButtons();
+        this.validate();
         return entry;
     }
 
