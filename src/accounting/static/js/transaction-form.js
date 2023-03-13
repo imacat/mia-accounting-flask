@@ -25,7 +25,7 @@
 // Initializes the page JavaScript.
 document.addEventListener("DOMContentLoaded", () => {
     TransactionForm.initialize();
-    JournalEntryForm.initialize();
+    JournalEntryEditor.initialize();
 });
 
 /**
@@ -479,7 +479,7 @@ class DebitCreditSideSubForm {
         this.#total = document.getElementById(this.#prefix + "-total");
         this.#addEntryButton = document.getElementById(this.#prefix + "-add-entry");
         this.#addEntryButton.onclick = () => {
-            JournalEntryForm.addNew(this);
+            JournalEntryEditor.addNew(this);
             AccountSelector.initializeJournalEntryForm();
             SummaryEditor.initializeNewJournalEntry(entryType);
         };
@@ -702,7 +702,7 @@ class JournalEntrySubForm {
         this.#amountText = document.getElementById(this.#prefix + "-amount-text");
         this.deleteButton = document.getElementById(this.#prefix + "-delete");
         this.#control.onclick = () => {
-            JournalEntryForm.edit(this, this.#accountCode.value, this.#accountCode.dataset.text, this.#summary.value, this.amount.value);
+            JournalEntryEditor.edit(this, this.#accountCode.value, this.#accountCode.dataset.text, this.#summary.value, this.amount.value);
             AccountSelector.initializeJournalEntryForm();
         };
         this.deleteButton.onclick = () => {
@@ -753,13 +753,13 @@ class JournalEntrySubForm {
 }
 
 /**
- * The journal entry form.
+ * The journal entry editor.
  *
  */
-class JournalEntryForm {
+class JournalEntryEditor {
 
     /**
-     * The journal entry form
+     * The journal entry editor
      * @type {HTMLFormElement}
      */
     #element;
@@ -831,20 +831,20 @@ class JournalEntryForm {
     #side;
 
     /**
-     * Constructs a new journal entry form.
+     * Constructs a new journal entry editor.
      *
      */
     constructor() {
-        this.#element = document.getElementById("accounting-entry-form");
-        this.#modal = document.getElementById("accounting-entry-form-modal");
-        this.#accountControl = document.getElementById("accounting-entry-form-account-control");
-        this.#account = document.getElementById("accounting-entry-form-account");
-        this.#accountError = document.getElementById("accounting-entry-form-account-error")
-        this.#summaryControl = document.getElementById("accounting-entry-form-summary-control");
-        this.#summary = document.getElementById("accounting-entry-form-summary");
-        this.#summaryError = document.getElementById("accounting-entry-form-summary-error");
-        this.#amount = document.getElementById("accounting-entry-form-amount");
-        this.#amountError = document.getElementById("accounting-entry-form-amount-error");
+        this.#element = document.getElementById("accounting-entry-editor");
+        this.#modal = document.getElementById("accounting-entry-editor-modal");
+        this.#accountControl = document.getElementById("accounting-entry-editor-account-control");
+        this.#account = document.getElementById("accounting-entry-editor-account");
+        this.#accountError = document.getElementById("accounting-entry-editor-account-error")
+        this.#summaryControl = document.getElementById("accounting-entry-editor-summary-control");
+        this.#summary = document.getElementById("accounting-entry-editor-summary");
+        this.#summaryError = document.getElementById("accounting-entry-editor-summary-error");
+        this.#amount = document.getElementById("accounting-entry-editor-amount");
+        this.#amountError = document.getElementById("accounting-entry-editor-amount-error");
         this.#element.onsubmit = () => {
             if (this.#validate()) {
                 if (this.#entry === null) {
@@ -978,17 +978,17 @@ class JournalEntryForm {
     }
 
     /**
-     * The journal entry form
-     * @type {JournalEntryForm}
+     * The journal entry editor
+     * @type {JournalEntryEditor}
      */
-    static #form;
+    static #editor;
 
     /**
-     * Initializes the journal entry form.
+     * Initializes the journal entry editor.
      *
      */
     static initialize() {
-        this.#form = new JournalEntryForm();
+        this.#editor = new JournalEntryEditor();
     }
 
     /**
@@ -997,7 +997,7 @@ class JournalEntryForm {
      * @param side {DebitCreditSideSubForm} the debit or credit side sub-form
      */
     static addNew(side) {
-        this.#form.#onAddNew(side);
+        this.#editor.#onAddNew(side);
     }
 
     /**
@@ -1010,7 +1010,7 @@ class JournalEntryForm {
      * @param amount {string} the amount
      */
     static edit(entry, accountCode, accountText, summary, amount) {
-        this.#form.#onEdit(entry, accountCode, accountText, summary, amount);
+        this.#editor.#onEdit(entry, accountCode, accountText, summary, amount);
     }
 
     /**
@@ -1018,7 +1018,7 @@ class JournalEntryForm {
      *
      */
     static validateAccount() {
-        this.#form.#validateAccount();
+        this.#editor.#validateAccount();
     }
 }
 
